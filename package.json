@@ -1,0 +1,25 @@
+{
+  "name": "introduce-crud-restapi",
+  "version": "1.0.0",
+  "description": "Project to introduce RestAPI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anyel-ec/NodeJS-Express-RestAPI-MySQL.git"
+  },
+  "author": "Anyel EC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Anyel-ec/NodeJS-Express-RestAPI-MySQL/issues"
+  },
+  "homepage": "https://github.com/Anyel-ec/NodeJS-Express-RestAPI-MySQL#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.10.2",
+    "save": "^2.9.0"
+  }
+}
