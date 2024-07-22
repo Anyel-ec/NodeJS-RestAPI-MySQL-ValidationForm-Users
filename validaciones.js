@@ -51,10 +51,14 @@ function validarTelefono(telefono) {
     return telefonoRegex.test(telefono);
 }
 
-
-
 function validarEdad(edad) {
     return edad >= 18 && edad <= 100;
 }
 
-module.exports = validarCedula, validarCorreo, validarFechaNacimiento, validarTelefono, validarEdad;
+module.exports = {
+    validarCedula,
+    validarCorreo,
+    validarFechaNacimiento,
+    validarTelefono,
+    validarEdad
+};

@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const getConnection = require('../conexion');
-const validarCorreo = require('../validaciones');
-const validarCedula = require('../validaciones');
-const validarFechaNacimiento = require('../validaciones');
-const validarTelefono = require('../validaciones');
-const validarEdad = require('../validaciones');
+const validateUserData = require('../middleware/validateUserData'); // Assuming the middleware is in a 'middleware' folder
 
 // Endpoint to get all users
 router.get('/usuarios', (req, res) => {
@@ -14,7 +10,7 @@ router.get('/usuarios', (req, res) => {
             res.sendStatus(400);
             return;
         }
-        
+
         conn.query('SELECT * FROM Usuario', (error, rows) => {
             conn.release();
             if (error) {
@@ -33,7 +29,7 @@ router.get('/usuario/:id', (req, res) => {
             res.sendStatus(400);
             return;
         }
-        
+
         const { id } = req.params;
         conn.query('SELECT * FROM Usuario WHERE id = ?', [id], (error, rows) => {
             conn.release();
@@ -47,7 +43,7 @@ router.get('/usuario/:id', (req, res) => {
 });
 
 // Endpoint to create a new user
-router.post('/usuario', (req, res) => {
+router.post('/usuario', validateUserData, (req, res) => {
     const data = {
         nombre: req.body.nombre,
         apellido: req.body.apellido,
@@ -59,43 +55,6 @@ router.post('/usuario', (req, res) => {
         cedula: req.body.cedula
     };
 
-    // validaciones por metodo
-    if (!validarCedula(data.cedula)) {
-        return res.status(400).send('La cédula es inválida');
-    }
-
-    if (!validarCorreo(data.correoElectronico)) {
-        return res.status(400).send('El correo electrónico es inválido');
-    }
-
-    if (!validarFechaNacimiento(data.fechaNacimiento)) {
-        return res.status(400).send('El usuario debe ser mayor de edad');
-    }
-
-    if (!validarTelefono(data.telefono)) {
-        return res.status(400).send('El teléfono es inválido');
-    }
-    if (!validarEdad(data.edad)) {
-        return res.status(400).send('La edad debe estar entre 18 y 100 años');
-    }
-
-    // validaciones por longitud, validar que los campos no estén vacíos
-    if (!data.nombre || !data.apellido || !data.fechaNacimiento || !data.correoElectronico 
-        || !data.telefono || !data.estado || !data.edad || !data.cedula) {
-        return res.status(400).send('Todos los campos son requeridos');
-    }
-    // validar longitud de los campos
-
-    if (data.nombre.length < 3 || data.nombre.length > 50) {
-        return res.status(400).send('El nombre debe tener entre 3 y 50 caracteres');
-    }
-
-    if (data.correoElectronico.length > 100) {
-        return res.status(400).send('El correo electrónico debe tener máximo 100 caracteres');
-    }
-
-
-
     const query = 'INSERT INTO Usuario (nombre, apellido, fechaNacimiento, correoElectronico, telefono, estado, edad, cedula) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
 
     getConnection((err, conn) => {
@@ -103,7 +62,7 @@ router.post('/usuario', (req, res) => {
             res.sendStatus(400);
             return;
         }
-        
+
         conn.query(query, Object.values(data), (err, results) => {
             conn.release();
             if (err) {
@@ -136,7 +95,7 @@ router.delete('/usuario/:id', (req, res) => {
 });
 
 // Endpoint to update a user by ID
-router.put('/usuario/:id', (req, res) => {
+router.put('/usuario/:id', validateUserData, (req, res) => {
     getConnection((error, conn) => {
         if (error) {
             res.sendStatus(400);
@@ -156,10 +115,8 @@ router.put('/usuario/:id', (req, res) => {
         };
 
         conn.query('UPDATE Usuario SET ? WHERE id = ?', [data, id], (error, results) => {
-            console.log(error);
             conn.release();
             if (error) {
-                console.log(error);
                 res.status(400).send('No se ha podido actualizar el usuario');
                 return;
             }
