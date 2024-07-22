@@ -4,7 +4,7 @@ var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'anyel',
-    database: 'factura'
+    database: 'validacion_lis'
 });
 
 var getConecction = function(cb){
